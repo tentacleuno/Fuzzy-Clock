@@ -1,85 +1,92 @@
 const Main = imports.ui.main;
 const GLib = imports.gi.GLib;
 
-var HOURS = [ "ONE",
-    "TWO",
-    "THREE",
-    "FOUR",
-    "FIVE",
-    "SIX",
-    "SEVEN",
-    "EIGHT",
-    "NINE",
-    "TEN",
-    "ELEVEN",
-    "TWELVE" ];
-
+var HOURS = [ "TWELVE",
+	"ONE",
+	"TWO",
+	"THREE",
+	"FOUR",
+	"FIVE",
+	"SIX",
+	"SEVEN",
+	"EIGHT",
+	"NINE",
+	"TEN",
+	"ELEVEN" ];
 var FUZZY_RULES = [ "%s O'CLOCK",
-    "FIVE past %s",
-    "TEN past %s",
-    "QUARTER past %s",
-    "TWENTY past %s",
-    "TWENTY FIVE past %s",
-    "HALF past %s",
-    "TWENTY FIVE to %s",
-    "TWENTY to %s",
-    "QUARTER to %s",
-    "TEN to %s",
-    "FIVE to %s" ];
+	"FIVE past %s",
+	"TEN past %s",
+	"QUARTER past %s",
+	"TWENTY past %s",
+	"TWENTY FIVE past %s",
+	"HALF past %s",
+	"TWENTY FIVE to %s",
+	"TWENTY to %s",
+	"QUARTER to %s",
+	"TEN to %s",
+	"FIVE to %s" ];
 
-function overrider(lbl) {
-    var t = lbl.get_text();
+var clockLabel;
+var signalID;
+var defaultText;
 
-    var now = GLib.DateTime.new_now_local();
-    var hour = now.get_hour();
-    var minute = now.get_minute();
-    minute = Math.floor((minute + 2) / 5);
+function setText() {
+	var now = GLib.DateTime.new_now_local();
+	var hour = now.get_hour();
+	var minute = now.get_minute();
+	var rule = Math.floor((minute + 2) / 5); // Round minutes
 
-    if (hour >= 12)
-        hour -= 12;
+	if (hour >= 12) // 0-23 to 0 to 11
+		hour -= 12;
 
-    hour -= 1;
+	if (rule > 6) // "To" the next hour
+		hour += 1;
 
-    if (minute > 6)
-        hour += 1;
+	if (rule == 12) // Use the OCLOCK rule
+		rule = 0;
 
-    var desired = FUZZY_RULES[minute].format(HOURS[hour]);
+	var currentText = clockLabel.get_text();
+	var desiredText = FUZZY_RULES[rule].format(HOURS[hour]);
 
-    if (t != desired) {
-        last = t;
-        lbl.set_text(desired);
-    }
+	if (currentText != desiredText) {
+		// Only set the text if it's changed to avoid loops
+		defaultText = currentText; // defaultText from Shell
+		clockLabel.set_text(desiredText);
+	}
 }
 
-var lbl, signalHandlerID, last = "";
-
 function enable() {
-    var sA = Main.panel._statusArea;
-    if (!sA) { sA = Main.panel.statusArea; }
+	var statusArea = Main.panel.statusArea;
 
-    if (!sA || !sA.dateMenu || !sA.dateMenu.actor) {
-        print("Looks like Shell has changed where things live again; aborting.");
-        return;
-    }
+	if (!statusArea || !statusArea.dateMenu || !statusArea.dateMenu.actor) {
+		print("Looks like Shell has changed things again; aborting.");
+		return;
+	}
 
-    sA.dateMenu.actor.first_child.get_children().forEach(function(w) {
-        // assume that the text label is the first StLabel we find.
-        // This is dodgy behaviour but there's no reliable way to
-        // work out which it is.
-        if (w.get_text && !lbl) { lbl = w; }
-    });
-    if (!lbl) {
-        print("Looks like Shell has changed where things live again; aborting.");
-        return;
-    }
-    signalHandlerID = lbl.connect("notify::text", overrider);
-    last = lbl.get_text();
-    overrider(lbl);
+	statusArea.dateMenu.actor.first_child.get_children().forEach(function(actor) {
+		// Assume that the text label is the first StLabel we find.
+		// This is dodgy behaviour but there's no reliable way to
+		// work out which it is.
+		if (actor.get_text && !clockLabel)
+			clockLabel = actor;
+	});
+
+	if (!clockLabel) {
+		print("Looks like Shell has changed things again; aborting.");
+		return;
+	}
+
+	defaultText = clockLabel.get_text();
+	// on text changed signal, run setText funcation
+	signalID = clockLabel.connect("notify::text", setText);
+
+	setText(); // Don't wait for the first signal to change the text
 }
 
 function disable() {
-    if (lbl && signalHandlerID) {
-        lbl.disconnect(signalHandlerID);
-        lbl.set_text(last);
-    }
+	if (clockLabel && signalID) {
+		// Stop reciving text changed signal
+		clockLabel.disconnect(signalID);
+		clockLabel.set_text(defaultText);
+	}
 }
