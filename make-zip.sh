@@ -1,4 +1,5 @@
-#!/bin/bash
+#!/usr/bin/bash
 
-rm clock-override.zip
-zip clock-override.zip --exclude make-zip.sh --exclude icon.svg --exclude icon-128.png --exclude screenshot.png -r *
+rm fuzzy-clocl.zip
+zip fuzzy-clock.zip extension.js LICENSE metadata.json
+

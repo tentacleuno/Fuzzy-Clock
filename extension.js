@@ -42,6 +42,9 @@ function setText() {
 	if (rule > 6) // "To" the next hour
 		hour += 1;
 
+	if (hour == 12)
+		hour = 0;
+
 	if (rule == 12) // Use the OCLOCK rule
 		rule = 0;
 
@@ -90,3 +93,4 @@ function disable() {
 		clockLabel.set_text(defaultText);
 	}
 }
+

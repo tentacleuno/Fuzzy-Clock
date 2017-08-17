@@ -1,12 +1,11 @@
 {
-  "name": "Clock override",
-  "description": "Change what the clock displays",
-  "shell-version": [
-    "3.16",
-    "3.18"
-  ],
-  "settings-schema": "org.gnome.shell.extensions.clock-override",
-  "url": "https://github.com/stuartlangridge/gnome-shell-clock-override",
-  "uuid": "clock-override@gnomeshell.kryogenix.org",
-  "version": 3
+	"name": "Fuzzy Clock",
+	"description": "Make the top bar clock fuzzy",
+	"shell-version": [
+		"3.34"
+	],
+	"url": "https://github.com/Cj-Malone/Fuzzy-Clock",
+	"uuid": "fuzzy-clock@keepawayfromfire.co.uk",
+	"version": 1
 }
+
