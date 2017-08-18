@@ -2,7 +2,8 @@
 	"name": "Fuzzy Clock",
 	"description": "Make the top bar clock fuzzy",
 	"shell-version": [
-		"3.34"
+		"3.22",
+		"3.24"
 	],
 	"url": "https://github.com/Cj-Malone/Fuzzy-Clock",
 	"uuid": "fuzzy-clock@keepawayfromfire.co.uk",
