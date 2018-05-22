@@ -16,7 +16,7 @@ git clone https://github.com/Cj-Malone/Fuzzy-Clock ${XDG_DATA_HOME:=$HOME/.local
 ## Arch Linux
 ```
 cd $(mktemp -d)
-curl https://raw.githubusercontent.com/Cj-Malone/Fuzzy-Clock/master/PKGBUILD > PKGBUILD
+curl https://gitlab.com/Cj-Malone/PKGBUILDs/raw/master/aur/gnome-shell-extension-fuzzy-clock/PKGBUILD > PKGBUILD
 makepkg
 sudo pacman -U gnome-shell-extension-fuzzy-clock-*-any.pkg.tar
 ```
